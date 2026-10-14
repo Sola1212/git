@@ -3,6 +3,7 @@
 #include "environment.h"
 #include "gettext.h"
 #include "repository.h"
+#include "wt-status.h"
 
 int cmd_psuh(int argc, const char **argv,
             const char *prefix, struct repository *repo)
@@ -10,6 +11,7 @@ int cmd_psuh(int argc, const char **argv,
         int i;
         const char *cfg_name;
         const char *cfg_email;
+        struct wt_status status;
 
         printf(_("Pony saying hello goes here.\n"));
 
@@ -32,5 +34,11 @@ int cmd_psuh(int argc, const char **argv,
                 printf(_("No email is foung in config\n"));
         else
                 printf(_("Your email: %s\n"), cfg_email);
+
+        wt_status_prepare(repo, &status);
+        repo_config(repo, git_default_config, &status);
+
+        printf(_("Your current branch: %s\n"), status.branch);
+
         return 0;
 }
