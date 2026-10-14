@@ -1,8 +1,11 @@
 #include "builtin.h"
+#include "commit.h"
 #include "config.h"
 #include "environment.h"
 #include "gettext.h"
+#include "pretty.h"
 #include "repository.h"
+#include "strbuf.h"
 #include "wt-status.h"
 
 int cmd_psuh(int argc, const char **argv,
@@ -12,6 +15,8 @@ int cmd_psuh(int argc, const char **argv,
         const char *cfg_name;
         const char *cfg_email;
         struct wt_status status;
+        struct commit *c = NULL;
+        struct strbuf commitline = STRBUF_INIT;
 
         printf(_("Pony saying hello goes here.\n"));
 
@@ -39,6 +44,14 @@ int cmd_psuh(int argc, const char **argv,
         repo_config(repo, git_default_config, &status);
 
         printf(_("Your current branch: %s\n"), status.branch);
+        printf(_("Index File: %s\n"), status.index_file);
+
+        c = lookup_commit_reference_by_name("origin/master");
+
+        if (c != NULL) {
+            pp_commit_easy(CMIT_FMT_ONELINE, c, &commitline);
+            printf(_("Current commit: %s\n"), commitline.buf);
+        }
 
         return 0;
 }
